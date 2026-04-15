@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administración</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=delete" />
+</head>
+
+<body>
+
+    <div class="contenedor">
+        <h1>Gestión de Usuarios</h1>
+
+        <a href="#" class="btn" id="btnNuevo">Nuevo Usuario</a>
+
+        <table id="tablaUsuarios">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="modalUsuario" class="modal">
+        <div class="modal-content">
+            <span class="close"></span>
+            <h2 id="tituloModal">Nuevo Usuario</h2>
+
+            <form id="formNuevoUsuario">
+
+                <div class="campo">
+                    <label>Nombre</label>
+                    <input type="text" id="nombre" required>
+                </div>
+
+                <div class="campo">
+                    <label>Apellidos</label>
+                    <input type="text" id="apellidos" required>
+                </div>
+
+                <div class="campo full">
+                    <label>Email</label>
+                    <input type="email" id="email" required>
+                </div>
+
+                <div class="campo">
+                    <label>Contraseña</label>
+
+                    <div class="password-container">
+                        <input type="password" id="contraseña" required>
+
+                        <button type="button" id="togglePassword">👁️</button>
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label>Rol</label>
+                    <select id="rol">
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="EMPLEADO">EMPLEADO</option>
+                    </select>
+                </div>
+
+                <div class="campo full">
+                    <label>Tipo de puesto</label>
+                    <select id="tipoPuesto">
+                        <option value="OFICINA">OFICINA</option>
+                        <option value="PRODUCCIÓN">PRODUCCIÓN</option>
+                    </select>
+                </div>
+
+                <div class="campo full">
+                    <label>Activo</label>
+                    <input type="checkbox" id="activo">
+                </div>
+
+                <div class="botones">
+                    <button type="submit">Aceptar</button>
+                    <button type="button" class="cancelar">Cancelar</button>
+                </div>
+
+
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TURNOS -->
+    <div id="modalTurnos" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModalTurnos()"></span>
+            <h2>Turnos del Usuario</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID empleado</th>
+                        <th>Fecha</th>
+                        <th>Entrada</th>
+                        <th>Salida</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaTurnosBody"></tbody>
+            </table>
+            <div class="botones">
+                <button type="button" class="cancelar" onclick="cerrarModalTurnos()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
