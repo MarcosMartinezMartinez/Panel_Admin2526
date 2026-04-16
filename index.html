@@ -7,7 +7,7 @@
     <title>Panel Administración</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=delete" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 </head>
 
 <body>
@@ -15,8 +15,10 @@
     <div class="contenedor">
         <h1>Gestión de Usuarios</h1>
 
-        <a href="#" class="btn" id="btnNuevo">Nuevo Usuario</a>
-
+        <a href="#" class="btn" id="btnNuevo">
+            <span class="material-symbols-outlined">person_add</span>
+            Nuevo Usuario
+        </a>
         <table id="tablaUsuarios">
             <thead>
                 <tr>

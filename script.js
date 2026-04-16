@@ -38,7 +38,9 @@ async function obtenerUsuarios() {
                 <td>${u.rol}</td>
                 <td>${u.activo ? "Sí" : "No"}</td>
                 <td>
-                    <a href="#" class="btn editar" onclick="event.stopPropagation(); abrirEditar(${u.idEmpleado})">Editar</a>
+                    <a href="#" class="btn editar" onclick="event.stopPropagation(); abrirEditar(${u.idEmpleado})"><span class="material-symbols-outlined">
+edit
+</span>Editar</a>
                     <a href="#" class="btn eliminar" onclick="event.stopPropagation(); eliminarUsuario(${u.idEmpleado})"><span class="material-symbols-outlined">
 delete
 </span> Eliminar</a>

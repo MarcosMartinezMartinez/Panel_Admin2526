@@ -17,7 +17,11 @@ h1 {
 
 /* BOTONES */
 .btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
     padding: 10px 15px;
     color: white;
     background: green;
@@ -40,12 +44,19 @@ h1 {
     background: red;
 }
 
+td:last-child {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
 /* TABLA */
 table {
     width: 100%;
     border-collapse: collapse;
     background: white;
-    box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     overflow: hidden;
 }
@@ -82,7 +93,7 @@ tr:hover {
     padding: 25px 30px;
     width: 450px;
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     animation: aparecer 0.3s ease;
 }
 
@@ -91,6 +102,7 @@ tr:hover {
         opacity: 0;
         transform: translateY(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -118,13 +130,13 @@ tr:hover {
     padding: 12px;
     border-radius: 10px;
     border: 1px solid #e0e0e0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     transition: 0.2s;
 }
 
 .campo:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .campo.full {
@@ -173,6 +185,7 @@ tr:hover {
     background: #dc3545;
     color: white;
 }
+
 /* Permitir scroll en el fondo del modal */
 .modal {
     display: none;
@@ -192,7 +205,7 @@ tr:hover {
     padding: 25px 30px;
     width: 480px;
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     animation: aparecer 0.3s ease;
     max-height: 90vh;
     overflow-y: auto;
@@ -228,4 +241,3 @@ tr:hover {
 #Password:hover {
     background: #ccc;
 }
-
