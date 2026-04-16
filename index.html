@@ -7,7 +7,7 @@
     <title>Panel Administración</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 </head>
 
 <body>
@@ -15,10 +15,10 @@
     <div class="contenedor">
         <h1>Gestión de Usuarios</h1>
 
-        <a href="#" class="btn" id="btnNuevo">
-            <span class="material-symbols-outlined">person_add</span>
-            Nuevo Usuario
-        </a>
+<a href="#" class="btn" id="btnNuevo">
+    <span class="material-symbols-outlined">person_add</span>
+    Nuevo Usuario
+</a>
         <table id="tablaUsuarios">
             <thead>
                 <tr>
@@ -105,18 +105,29 @@
             <span class="close" onclick="cerrarModalTurnos()"></span>
             <h2>Turnos del Usuario</h2>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID empleado</th>
-                        <th>Turno</th>
-                        <th>Entrada</th>
-                        <th>Salida</th>
-                    </tr>
-                </thead>
+<h3>Turnos</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Turno</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+        </tr>
+    </thead>
+    <tbody id="tablaTurnosBody"></tbody>
+</table>
 
-                <tbody id="tablaTurnosBody"></tbody>
-            </table>
+<h3>Fichajes</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Entrada</th>
+            <th>Salida</th>
+        </tr>
+    </thead>
+    <tbody id="tablaFichajesBody"></tbody>
+</table>
             <div class="botones">
                 <button type="button" class="cancelar" onclick="cerrarModalTurnos()">Cerrar</button>
             </div>

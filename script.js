@@ -1,12 +1,11 @@
-
 const BASE_URL = "http://localhost:8080/usuario";
 const BASE_TURNOS = "http://localhost:8080/turno";
+const BASE_FICHAJES = "http://localhost:8080/fichaje";
 
 // Credenciales HTTP Basic
 const USUARIO = "admin";
 const PASSWORD = "admin";
 
-// Variable para saber si estamos editando
 let usuarioEditando = null;
 
 // --- OBTENER USUARIOS ---
@@ -38,12 +37,12 @@ async function obtenerUsuarios() {
                 <td>${u.rol}</td>
                 <td>${u.activo ? "Sí" : "No"}</td>
                 <td>
-                    <a href="#" class="btn editar" onclick="event.stopPropagation(); abrirEditar(${u.idEmpleado})"><span class="material-symbols-outlined">
-edit
-</span>Editar</a>
-                    <a href="#" class="btn eliminar" onclick="event.stopPropagation(); eliminarUsuario(${u.idEmpleado})"><span class="material-symbols-outlined">
-delete
-</span> Eliminar</a>
+                    <a href="#" class="btn editar" onclick="event.stopPropagation(); abrirEditar(${u.idEmpleado})">
+                        <span class="material-symbols-outlined">edit</span>Editar
+                    </a>
+                    <a href="#" class="btn eliminar" onclick="event.stopPropagation(); eliminarUsuario(${u.idEmpleado})">
+                        <span class="material-symbols-outlined">delete</span>Eliminar
+                    </a>
                 </td>
             `;
 
@@ -72,7 +71,7 @@ async function verTurnos(idEmpleado) {
         tbody.innerHTML = "";
 
         if (!turnos || turnos.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5">No hay turnos</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="3">No hay turnos</td></tr>`;
             document.getElementById("modalTurnos").style.display = "block";
             return;
         }
@@ -81,7 +80,6 @@ async function verTurnos(idEmpleado) {
             const tr = document.createElement("tr");
 
             tr.innerHTML = `
-                <td>${t.idEmpleado}</td>
                 <td>${t.tipoTurno}</td>
                 <td>${t.fechaInicio}</td>
                 <td>${t.fechaFin}</td>
@@ -90,6 +88,7 @@ async function verTurnos(idEmpleado) {
             tbody.appendChild(tr);
         });
 
+        verFichajes(idEmpleado);
         document.getElementById("modalTurnos").style.display = "block";
 
     } catch (err) {
@@ -147,7 +146,7 @@ function cerrarModal() {
     usuarioEditando = null;
 }
 
-// --- CREAR / EDITAR USUARIO ---
+// --- CREAR / EDITAR ---
 form.onsubmit = async (e) => {
     e.preventDefault();
 
@@ -192,7 +191,7 @@ form.onsubmit = async (e) => {
     }
 };
 
-// --- EDITAR USUARIO ---
+// --- EDITAR ---
 async function abrirEditar(id) {
     try {
         const res = await fetch(`${BASE_URL}/id/${id}`, {
@@ -207,7 +206,7 @@ async function abrirEditar(id) {
         document.getElementById("nombre").value = u.nombre;
         document.getElementById("apellidos").value = u.apellidos;
         document.getElementById("email").value = u.email;
-        document.getElementById("contraseña").value = u.contraseña;
+        document.getElementById("contraseña").value = "F1234";
         document.getElementById("rol").value = u.rol;
         document.getElementById("tipoPuesto").value = u.tipoPuesto;
         document.getElementById("activo").checked = u.activo;
@@ -220,7 +219,7 @@ async function abrirEditar(id) {
     }
 }
 
-// --- TOGGLE PASSWORD ---
+// --- PASSWORD TOGGLE ---
 const togglePassword = document.getElementById("togglePassword");
 const passwordInput = document.getElementById("contraseña");
 
@@ -228,5 +227,81 @@ togglePassword.addEventListener("click", () => {
     passwordInput.type = passwordInput.type === "password" ? "text" : "password";
 });
 
-// --- INIT ---
+// --- FICHAJES (CORREGIDO) ---
+async function verFichajes(idEmpleado) {
+    try {
+        const res = await fetch(`${BASE_FICHAJES}/empleado/${idEmpleado}`, {
+            headers: {
+                "Authorization": "Basic " + btoa(`${USUARIO}:${PASSWORD}`)
+            }
+        });
+
+        if (!res.ok) throw new Error("Error al obtener fichajes");
+
+        const fichajes = await res.json();
+console.log("FICHAJES RECIBIDOS:", fichajes);
+        const tbody = document.getElementById("tablaFichajesBody");
+        tbody.innerHTML = "";
+
+        const mapa = {};
+
+        fichajes.forEach(f => {
+
+            let fechaRaw = f.fechaHora || f.fecha_hora;
+
+            if (!fechaRaw) return;
+
+            // soporta "10,04,2026"
+            let fechaObj;
+
+            if (typeof fechaRaw === "string" && fechaRaw.includes(",")) {
+                const partes = fechaRaw.split(",");
+
+                fechaObj = new Date(
+                    partes[2],
+                    partes[1] - 1,
+                    partes[0]
+                );
+            } else {
+                fechaObj = new Date(fechaRaw);
+            }
+
+            if (isNaN(fechaObj)) return;
+
+            const fecha = fechaObj.toLocaleDateString();
+
+            if (!mapa[fecha]) {
+                mapa[fecha] = { entrada: "-", salida: "-" };
+            }
+
+            const hora = fechaObj.toLocaleTimeString();
+
+            if (f.tipo === "ENTRADA") {
+                mapa[fecha].entrada = hora;
+            }
+
+            if (f.tipo === "SALIDA") {
+                mapa[fecha].salida = hora;
+            }
+        });
+
+        Object.keys(mapa).forEach(fecha => {
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+                <td>${fecha}</td>
+                <td>${mapa[fecha].entrada}</td>
+                <td>${mapa[fecha].salida}</td>
+            `;
+
+            tbody.appendChild(tr);
+        });
+
+    } catch (err) {
+        console.error(err);
+        alert("Error al cargar fichajes");
+    }
+}
+
+// INIT
 window.onload = obtenerUsuarios;
