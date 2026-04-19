@@ -1,29 +1,29 @@
-// 🔐 SESIÓN
+// Recuperación de datos de sesión desde localStorage
 const usuarioSesion = JSON.parse(localStorage.getItem("usuario"));
 const auth = localStorage.getItem("auth");
 
+// Control de acceso: solo usuarios con rol ADMIN pueden continuar
 if (!usuarioSesion || usuarioSesion.rol !== "ADMIN" || !auth) {
     window.location.href = "login.html";
 }
 
-// 🌐 BASE URLS
+// URLs base de la API
 const BASE_URL = "http://localhost:8080/usuario";
 const BASE_TURNOS = "http://localhost:8080/turno";
 const BASE_FICHAJES = "http://localhost:8080/fichaje";
 
-// 🧠 ESTADO GLOBAL
+// Variable global para controlar si se está editando un usuario
 let usuarioEditando = null;
 
-// 🚀 INICIO
+// Inicialización cuando el DOM está cargado
 window.addEventListener("DOMContentLoaded", () => {
     obtenerUsuarios();
     configurarFormulario();
     configurarModal();
 });
 
-// ==========================
-// 👥 OBTENER USUARIOS
-// ==========================
+
+// Obtener lista de usuarios desde el backend
 async function obtenerUsuarios() {
     try {
         const res = await fetch(BASE_URL, {
@@ -42,25 +42,28 @@ async function obtenerUsuarios() {
         usuarios.forEach(u => {
             const tr = document.createElement("tr");
 
+            // Permite abrir turnos al hacer clic en la fila
             tr.style.cursor = "pointer";
             tr.onclick = () => verTurnos(u.idEmpleado);
 
             tr.innerHTML = `
-    <td>${u.idEmpleado}</td>
-    <td>${u.nombre}</td>
-    <td>${u.apellidos}</td>
-    <td>${u.email}</td>
-    <td>${u.rol}</td>
-    <td>${u.activo ? "Sí" : "No"}</td>
-    <td>
-        <a href="#" class="btn editar" onclick="event.stopPropagation(); abrirEditar(${u.idEmpleado})">
-            <span class="material-symbols-outlined">edit</span>Editar
-        </a>
-        <a href="#" class="btn eliminar" onclick="event.stopPropagation(); eliminarUsuario(${u.idEmpleado})">
-            <span class="material-symbols-outlined">delete</span>Eliminar
-        </a>
-    </td>
-`;
+                <td>${u.idEmpleado}</td>
+                <td>${u.nombre}</td>
+                <td>${u.apellidos}</td>
+                <td>${u.email}</td>
+                <td>${u.rol}</td>
+                <td>${u.activo ? "Sí" : "No"}</td>
+                <td>
+                    <a href="#" class="btn editar"
+                       onclick="event.stopPropagation(); abrirEditar(${u.idEmpleado})">
+                        Editar
+                    </a>
+                    <a href="#" class="btn eliminar"
+                       onclick="event.stopPropagation(); eliminarUsuario(${u.idEmpleado})">
+                        Eliminar
+                    </a>
+                </td>
+            `;
 
             tbody.appendChild(tr);
         });
@@ -71,12 +74,10 @@ async function obtenerUsuarios() {
     }
 }
 
-// ==========================
-// 🧾 FORMULARIO (CREAR / EDITAR)
-// ==========================
+
+// Configuración del formulario de creación y edición
 function configurarFormulario() {
     const form = document.getElementById("formNuevoUsuario");
-    const modal = document.getElementById("modalUsuario");
 
     form.onsubmit = async (e) => {
         e.preventDefault();
@@ -93,7 +94,7 @@ function configurarFormulario() {
             fechaAlta: new Date().toISOString().split('T')[0]
         };
 
-        // 🔥 SOLO si escribe contraseña
+        // La contraseña solo se envía si el usuario la introduce
         if (pass.trim() !== "") {
             usuario.contraseña = pass;
         }
@@ -101,12 +102,13 @@ function configurarFormulario() {
         let url = BASE_URL;
         let metodo = "POST";
 
-        // 🔥 EDITAR
+        // Modo edición
         if (usuarioEditando) {
             url = `${BASE_URL}/${usuarioEditando.idEmpleado}`;
             metodo = "PUT";
-            usuario.fechaAlta = usuarioEditando.fechaAlta;
+
             usuario.idEmpleado = usuarioEditando.idEmpleado;
+            usuario.fechaAlta = usuarioEditando.fechaAlta;
         }
 
         try {
@@ -121,7 +123,6 @@ function configurarFormulario() {
 
             if (!res.ok) {
                 const error = await res.text();
-                console.error("ERROR BACKEND:", error);
                 throw new Error(error);
             }
 
@@ -135,9 +136,8 @@ function configurarFormulario() {
     };
 }
 
-// ==========================
-// 🪟 MODAL
-// ==========================
+
+// Configuración del modal de usuarios
 function configurarModal() {
     const modal = document.getElementById("modalUsuario");
     const btnNuevo = document.getElementById("btnNuevo");
@@ -154,15 +154,15 @@ function configurarModal() {
     cancelar.onclick = cerrarModal;
 }
 
+// Cierra el modal y limpia el formulario
 function cerrarModal() {
     document.getElementById("modalUsuario").style.display = "none";
     document.getElementById("formNuevoUsuario").reset();
     usuarioEditando = null;
 }
 
-// ==========================
-// ✏️ EDITAR USUARIO
-// ==========================
+
+// Cargar datos de un usuario en el formulario para editar
 async function abrirEditar(id) {
     try {
         const res = await fetch(`${BASE_URL}/id/${id}`, {
@@ -192,9 +192,8 @@ async function abrirEditar(id) {
     }
 }
 
-// ==========================
-// 🗑 ELIMINAR USUARIO
-// ==========================
+
+// Eliminar usuario por ID
 async function eliminarUsuario(id) {
     if (!confirm("¿Seguro que quieres eliminar este usuario?")) return;
 
@@ -216,9 +215,8 @@ async function eliminarUsuario(id) {
     }
 }
 
-// ==========================
-// 🕒 TURNOS
-// ==========================
+
+// Obtener turnos de un empleado
 async function verTurnos(idEmpleado) {
     try {
         const res = await fetch(`${BASE_TURNOS}/empleado/${idEmpleado}`, {
@@ -261,13 +259,14 @@ async function verTurnos(idEmpleado) {
     }
 }
 
+
+// Cerrar modal de turnos
 function cerrarModalTurnos() {
     document.getElementById("modalTurnos").style.display = "none";
 }
 
-// ==========================
-// 🧾 FICHAJES
-// ==========================
+
+// Obtener fichajes agrupados por día
 async function verFichajes(idEmpleado) {
     try {
         const res = await fetch(`${BASE_FICHAJES}/empleado/${idEmpleado}`, {
