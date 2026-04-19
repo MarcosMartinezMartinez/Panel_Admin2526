@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Usuario</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="usuario.js" defer></script>
+</head>
+
+<body>
+
+<div class="contenedor">
+    <h1>Mi Perfil</h1>
+
+    <table>
+        <tbody>
+            <tr><th>ID</th><td id="uId"></td></tr>
+            <tr><th>Nombre</th><td id="uNombre"></td></tr>
+            <tr><th>Apellidos</th><td id="uApellidos"></td></tr>
+            <tr><th>Email</th><td id="uEmail"></td></tr>
+            <tr><th>Rol</th><td id="uRol"></td></tr>
+        </tbody>
+    </table>
+
+    <h2>Mis Fichajes</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Entrada</th>
+                <th>Salida</th>
+            </tr>
+        </thead>
+        <tbody id="tablaFichajesUsuario"></tbody>
+    </table>
+
+    <div class="botones">
+        <button onclick="logout()">Cerrar sesión</button>
+    </div>
+
+</div>
+
+</body>
+</html>
