@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Panel Usuario</title>
@@ -9,37 +10,89 @@
 
 <body>
 
-<div class="contenedor">
-    <h1>Mi Perfil</h1>
+    <div class="contenedor">
+        <h1>Mi Perfil</h1>
 
-    <table>
-        <tbody>
-            <tr><th>ID</th><td id="uId"></td></tr>
-            <tr><th>Nombre</th><td id="uNombre"></td></tr>
-            <tr><th>Apellidos</th><td id="uApellidos"></td></tr>
-            <tr><th>Email</th><td id="uEmail"></td></tr>
-            <tr><th>Rol</th><td id="uRol"></td></tr>
-        </tbody>
-    </table>
+        <table>
+            <tbody>
+                <tr>
+                    <th>ID</th>
+                    <td id="uId"></td>
+                </tr>
+                <tr>
+                    <th>Nombre</th>
+                    <td id="uNombre"></td>
+                </tr>
+                <tr>
+                    <th>Apellidos</th>
+                    <td id="uApellidos"></td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td id="uEmail"></td>
+                </tr>
+                <tr>
+                    <th>Rol</th>
+                    <td id="uRol"></td>
+                </tr>
+            </tbody>
+        </table>
 
-    <h2>Mis Fichajes</h2>
+        <h2>Mis Turnos (2 semanas)</h2>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Entrada</th>
-                <th>Salida</th>
-            </tr>
-        </thead>
-        <tbody id="tablaFichajesUsuario"></tbody>
-    </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Inicio</th>
+                    <th>Fin</th>
+                </tr>
+            </thead>
+            <tbody id="tablaTurnosUsuario"></tbody>
+        </table>
 
-    <div class="botones">
-        <button onclick="logout()">Cerrar sesión</button>
+        <h2>Fichar hoy</h2>
+
+        <div class="botones">
+            <button id="btnEntrada" onclick="fichar('ENTRADA')">Fichar Entrada</button>
+            <button id="btnSalida" onclick="fichar('SALIDA')">Fichar Salida</button>
+        </div>
+
+        <h2>Mis Fichajes</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Entrada</th>
+                    <th>Salida</th>
+                </tr>
+            </thead>
+            <tbody id="tablaFichajesUsuario"></tbody>
+        </table>
+
+        <div class="botones">
+            <button onclick="logout()">Cerrar sesión</button>
+        </div>
+
     </div>
 
-</div>
+    <div id="modalIncidencia" class="modal">
+        <div class="modal-content">
+            <h3>Justificar retraso</h3>
+            <select id="motivoRetraso" onchange="mostrarDescripcion()">
+                <option value="TRAFICO">Tráfico</option>
+                <option value="TRANSPORTE">Transporte público</option>
+                <option value="SALUD">Problema de salud</option>
+                <option value="OTRO">Otro</option>
+            </select>
 
+            <textarea id="descripcionExtra" placeholder="Describe el motivo..."
+                style="display:none; width:100%; margin-top:10px;"></textarea>
+
+            <button onclick="confirmarIncidencia()">Confirmar</button>
+        </div>
+    </div>
 </body>
+
 </html>

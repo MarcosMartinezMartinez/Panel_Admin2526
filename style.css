@@ -242,3 +242,49 @@ tr:hover {
     background: #ccc;
 }
 
+/* Botones fichaje*/
+#btnEntrada,
+#btnSalida {
+    padding: 12px 22px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+#btnEntrada {
+    background: linear-gradient(135deg, #28a745, #34d058);
+    color: white;
+}
+
+#btnSalida {
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    color: white;
+}
+
+#btnEntrada:hover:not(:disabled),
+#btnSalida:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+}
+
+#btnEntrada:active:not(:disabled),
+#btnSalida:active:not(:disabled) {
+    transform: translateY(0px);
+}
+
+
+#btnEntrada:disabled,
+#btnSalida:disabled {
+    background: #bdbdbd !important;
+    color: #eeeeee !important;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+    opacity: 0.7;
+
+    /* 👇 clave: que se note "bloqueado" */
+    filter: grayscale(40%);
+}
