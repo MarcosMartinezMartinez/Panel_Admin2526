@@ -11,33 +11,64 @@
 <body>
 
     <div class="contenedor">
-        <h1>Mi Perfil</h1>
+        <div class="header-perfil">
+            <h1>Mi Perfil: <span id="nombreHeader"></span></h1>
+            <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+        </div>
+        <!-- PERFIL + FICHAJE EN LA MISMA FILA -->
+        <div class="fila-superior">
 
-        <table>
-            <tbody>
-                <tr>
-                    <th>ID</th>
-                    <td id="uId"></td>
-                </tr>
-                <tr>
-                    <th>Nombre</th>
-                    <td id="uNombre"></td>
-                </tr>
-                <tr>
-                    <th>Apellidos</th>
-                    <td id="uApellidos"></td>
-                </tr>
-                <tr>
-                    <th>Email</th>
-                    <td id="uEmail"></td>
-                </tr>
-                <tr>
-                    <th>Rol</th>
-                    <td id="uRol"></td>
-                </tr>
-            </tbody>
-        </table>
+            <!-- PERFIL -->
+            <div class="perfil-box">
 
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>ID</th>
+                            <td id="uId"></td>
+                        </tr>
+                        <tr>
+                            <th>Nombre</th>
+                            <td id="uNombre"></td>
+                        </tr>
+                        <tr>
+                            <th>Apellidos</th>
+                            <td id="uApellidos"></td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td id="uEmail"></td>
+                        </tr>
+                        <tr>
+                            <th>Rol</th>
+                            <td id="uRol"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- FICHAJE -->
+            <div class="fichaje-box">
+                <h2>Fichar hoy</h2>
+
+
+                <div class="botones-fichaje">
+
+                    <p>Entrada hoy: <span id="horaEntradaHoy">--:--</span></p>
+                    <button id="btnEntrada" class="btn-entrada" onclick="fichar('ENTRADA')">
+                        Fichar Entrada
+                    </button>
+
+                    <p>Salida hoy: <span id="horaSalidaHoy">--:--</span></p>
+                    <button id="btnSalida" class="btn-salida" onclick="fichar('SALIDA')">
+                        Fichar Salida
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TURNOS -->
         <h2>Mis Turnos (2 semanas)</h2>
 
         <table>
@@ -51,13 +82,7 @@
             <tbody id="tablaTurnosUsuario"></tbody>
         </table>
 
-        <h2>Fichar hoy</h2>
-
-        <div class="botones">
-            <button id="btnEntrada" onclick="fichar('ENTRADA')">Fichar Entrada</button>
-            <button id="btnSalida" onclick="fichar('SALIDA')">Fichar Salida</button>
-        </div>
-
+        <!-- FICHAJES -->
         <h2>Mis Fichajes</h2>
 
         <table>
@@ -71,15 +96,17 @@
             <tbody id="tablaFichajesUsuario"></tbody>
         </table>
 
-        <div class="botones">
-            <button onclick="logout()">Cerrar sesión</button>
-        </div>
+
+
 
     </div>
 
+    <!-- MODAL INCIDENCIA -->
     <div id="modalIncidencia" class="modal">
         <div class="modal-content">
+
             <h3>Justificar retraso</h3>
+
             <select id="motivoRetraso" onchange="mostrarDescripcion()">
                 <option value="TRAFICO">Tráfico</option>
                 <option value="TRANSPORTE">Transporte público</option>
@@ -88,11 +115,18 @@
             </select>
 
             <textarea id="descripcionExtra" placeholder="Describe el motivo..."
-                style="display:none; width:100%; margin-top:10px;"></textarea>
+                style="display:none; width:100%; margin-top:10px;">
+            </textarea>
 
-            <button onclick="confirmarIncidencia()">Confirmar</button>
+            <div style="margin-top:15px;">
+                <button onclick="confirmarIncidencia()">
+                    Confirmar
+                </button>
+            </div>
+
         </div>
     </div>
+
 </body>
 
 </html>

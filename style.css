@@ -10,18 +10,98 @@ h1 {
     margin-bottom: 20px;
 }
 
+h2 {
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
 .contenedor {
     width: 90%;
     margin: auto;
 }
+.fila-superior {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+    margin-bottom: 30px;
+    align-items: stretch;
+}
 
-/* BOTONES */
+.perfil-box,
+.fichaje-box {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+}
+
+.perfil-box table {
+    height: 100%;
+}
+
+.fichaje-box {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    justify-content: space-between;
+}
+
+.botones-fichaje {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.botones-fichaje button {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .fila-superior {
+        flex-direction: column;
+    }
+
+.perfil-box,
+.fichaje-box {
+        width: 100%;
+    }
+}
+
+
+.perfil-box th,
+.perfil-box td {
+    padding: 14px 12px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: none;
+
+}
+
+.perfil-box td {
+    color: #111827;
+    font-weight: 500;
+}
+
+.perfil-box tr {
+    border-bottom: 1px solid #eef2f7;
+}
+
+.perfil-box tr:hover {
+    background: rgba(59, 130, 246, 0.04);
+}
+.perfil-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*botones*/
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 5px;
-
     padding: 10px 15px;
     color: white;
     background: green;
@@ -51,7 +131,7 @@ td:last-child {
     gap: 8px;
 }
 
-/* TABLA */
+/* tablas*/
 table {
     width: 100%;
     border-collapse: collapse;
@@ -77,8 +157,7 @@ tr:hover {
     background: #f1f1f1;
 }
 
-/* MODAL */
-
+/*modales*/
 @keyframes aparecer {
     from {
         opacity: 0;
@@ -97,14 +176,36 @@ tr:hover {
     cursor: pointer;
 }
 
-/* FORMULARIO GRID */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    padding: 20px;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    margin: auto;
+    padding: 25px 30px;
+    width: 480px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    animation: aparecer 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/*Formularios*/
 #formNuevoUsuario {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
 }
 
-/* CAMPOS */
 .campo {
     display: flex;
     flex-direction: column;
@@ -140,7 +241,6 @@ tr:hover {
     background: #f9fafb;
 }
 
-/* BOTONES FORM */
 .botones {
     grid-column: span 2;
     display: flex;
@@ -156,43 +256,17 @@ tr:hover {
     cursor: pointer;
 }
 
-/* Aceptar */
 .botones button[type="submit"] {
     background: #28a745;
     color: white;
 }
 
-/* Cancelar */
 .cancelar {
     background: #dc3545;
     color: white;
 }
 
-/* Permitir scroll en el fondo del modal */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
-    padding: 20px;
-}
-
-/* Ajustar tamaño del modal */
-.modal-content {
-    background-color: #ffffff;
-    margin: auto;
-    padding: 25px 30px;
-    width: 480px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    animation: aparecer 0.3s ease;
-    max-height: 90vh;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
+/*Contraseña*/
 #activo {
     transform: scale(1.5);
     margin-left: 10px;
@@ -224,49 +298,76 @@ tr:hover {
     background: #ccc;
 }
 
-/* Botones fichaje*/
-#btnEntrada,
-#btnSalida {
-    padding: 12px 22px;
+/*BOTONES FICHAJE*/
+
+.botones-fichaje {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.botones-fichaje button {
+    padding: 14px 22px;
     border-radius: 8px;
     border: none;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.25s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    font-size: 16px;
+    width: 200px;
 }
 
-#btnEntrada {
+.btn-entrada {
     background: linear-gradient(135deg, #28a745, #34d058);
     color: white;
 }
 
-#btnSalida {
+.btn-salida {
     background: linear-gradient(135deg, #007bff, #00c6ff);
     color: white;
 }
 
-#btnEntrada:hover:not(:disabled),
-#btnSalida:hover:not(:disabled) {
+.botones-fichaje button:hover:not(:disabled) {
     transform: translateY(-3px);
-    box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
 }
 
-#btnEntrada:active:not(:disabled),
-#btnSalida:active:not(:disabled) {
+.botones-fichaje button:active:not(:disabled) {
     transform: translateY(0px);
 }
 
-
-#btnEntrada:disabled,
-#btnSalida:disabled {
+.botones-fichaje button:disabled {
     background: #bdbdbd !important;
     color: #eeeeee !important;
     cursor: not-allowed;
     box-shadow: none;
     transform: none;
     opacity: 0.7;
-
-    /* 👇 clave: que se note "bloqueado" */
     filter: grayscale(40%);
+}
+
+.header-perfil {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* botón */
+.btn-logout {
+    padding: 10px 15px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.btn-logout:hover {
+    background: #c82333;
+    transform: scale(1.05);
 }

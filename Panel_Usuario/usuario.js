@@ -3,22 +3,25 @@ const BASE_TURNOS = "http://localhost:8080/turno";
 
 const usuario = JSON.parse(localStorage.getItem("usuario"));
 
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("nombreHeader").textContent = usuario.nombre;
+});
+
 if (!usuario) {
     window.location.href = "login.html";
 }
 
-// Cargar datos
 document.getElementById("uId").textContent = usuario.idEmpleado;
 document.getElementById("uNombre").textContent = usuario.nombre;
 document.getElementById("uApellidos").textContent = usuario.apellidos;
 document.getElementById("uEmail").textContent = usuario.email;
 document.getElementById("uRol").textContent = usuario.rol;
 
-// Cargar fichajes
+
+//Cargar Fichajes
 async function cargarFichajes() {
     try {
         const res = await fetch(`${BASE_FICHAJES}/empleado/${usuario.idEmpleado}`);
-
         const fichajes = await res.json();
 
         const tbody = document.getElementById("tablaFichajesUsuario");
@@ -26,18 +29,34 @@ async function cargarFichajes() {
 
         const mapa = {};
 
+        const hoy = new Date().toLocaleDateString();
+        let entradaHoy = "--:--";
+        let salidaHoy = "--:--";
+
         fichajes.forEach(f => {
             const fechaObj = new Date(f.fechaHora);
             const fecha = fechaObj.toLocaleDateString();
+            const hora = fechaObj.toLocaleTimeString();
 
             if (!mapa[fecha]) {
                 mapa[fecha] = { entrada: "-", salida: "-" };
             }
 
-            const hora = fechaObj.toLocaleTimeString();
+            if (f.tipo === "ENTRADA") {
+                mapa[fecha].entrada = hora;
 
-            if (f.tipo === "ENTRADA") mapa[fecha].entrada = hora;
-            if (f.tipo === "SALIDA") mapa[fecha].salida = hora;
+                if (fecha === hoy) {
+                    entradaHoy = hora;
+                }
+            }
+
+            if (f.tipo === "SALIDA") {
+                mapa[fecha].salida = hora;
+
+                if (fecha === hoy) {
+                    salidaHoy = hora;
+                }
+            }
         });
 
         Object.keys(mapa).forEach(fecha => {
@@ -52,6 +71,9 @@ async function cargarFichajes() {
             tbody.appendChild(tr);
         });
 
+        document.getElementById("horaEntradaHoy").textContent = entradaHoy;
+        document.getElementById("horaSalidaHoy").textContent = salidaHoy;
+
     } catch (err) {
         console.error(err);
     }
@@ -59,6 +81,8 @@ async function cargarFichajes() {
 
 cargarFichajes();
 
+
+//turnos
 
 let turnoHoy = null;
 
@@ -92,10 +116,9 @@ async function cargarTurnos() {
                     <td>${t.fechaFin}</td>
                 `;
 
-                // Detecta el turno del día actual.
                 if (fechaInicio.getTime() === hoy.getTime()) {
                     turnoHoy = t;
-                    tr.style.backgroundColor = "#d4edda"; // opcional (verde)
+                    tr.style.backgroundColor = "#d4edda";
                 }
 
                 tbody.appendChild(tr);
@@ -106,8 +129,11 @@ async function cargarTurnos() {
         console.error(err);
     }
 }
+
 cargarTurnos();
 
+
+// Fichar
 async function controlarBotonesFichaje() {
     try {
         const res = await fetch(`${BASE_FICHAJES}/empleado/${usuario.idEmpleado}`);
@@ -147,6 +173,7 @@ async function controlarBotonesFichaje() {
         console.error(err);
     }
 }
+
 async function fichar(tipo) {
 
     if (!turnoHoy) {
@@ -155,26 +182,17 @@ async function fichar(tipo) {
     }
 
     const ahora = new Date();
-
     const inicioTurno = new Date(turnoHoy.fechaInicio.replace(" ", "T"));
 
-    console.log("AHORA:", ahora);
-    console.log("INICIO TURNO:", inicioTurno);
-
     if (tipo === "ENTRADA" && ahora.getTime() > inicioTurno.getTime()) {
-
-        console.log("RETRASO DETECTADO");
-
         document.getElementById("modalIncidencia").style.display = "block";
-
         window.fichajePendiente = { tipo };
-
         return;
     }
 
-    console.log("✔ FICHAJE NORMAL");
     await enviarFichaje(tipo);
 }
+
 async function enviarFichaje(tipo, descripcion = null) {
     try {
         const res = await fetch(BASE_FICHAJES, {
@@ -199,11 +217,16 @@ async function enviarFichaje(tipo, descripcion = null) {
         console.error(err);
     }
 }
+
+
+
+//incidencias
+
 async function confirmarIncidencia() {
 
     const motivo = document.getElementById("motivoRetraso").value;
 
-    const resFichaje = await enviarFichaje("ENTRADA");
+    await enviarFichaje("ENTRADA");
 
     const incidencia = {
         idEmpleado: usuario.idEmpleado,
@@ -213,8 +236,6 @@ async function confirmarIncidencia() {
             ? document.getElementById("descripcionExtra").value
             : motivo
     };
-
-    console.log("INCIDENCIA ENVIADA:", incidencia);
 
     const res = await fetch("http://localhost:8080/incidencias", {
         method: "POST",
@@ -226,7 +247,7 @@ async function confirmarIncidencia() {
 
     if (!res.ok) {
         const error = await res.text();
-        console.error("ERROR BACKEND:", error);
+        console.error(error);
         alert("Error al guardar incidencia");
         return;
     }
@@ -236,6 +257,8 @@ async function confirmarIncidencia() {
     cargarFichajes();
     controlarBotonesFichaje();
 }
+
+
 function mostrarDescripcion() {
     const motivo = document.getElementById("motivoRetraso").value;
     const textarea = document.getElementById("descripcionExtra");
@@ -247,10 +270,10 @@ function mostrarDescripcion() {
         textarea.value = "";
     }
 }
+
 controlarBotonesFichaje();
 
-
-// Logout
+// Salir
 function logout() {
     localStorage.removeItem("usuario");
     window.location.href = "../Login/login.html";
