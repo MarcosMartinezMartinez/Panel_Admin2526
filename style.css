@@ -78,24 +78,6 @@ tr:hover {
 }
 
 /* MODAL */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
-}
-
-.modal-content {
-    background-color: #ffffff;
-    margin: 5% auto;
-    padding: 25px 30px;
-    width: 450px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    animation: aparecer 0.3s ease;
-}
 
 @keyframes aparecer {
     from {
@@ -194,7 +176,6 @@ tr:hover {
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
-    overflow-y: auto;
     padding: 20px;
 }
 
@@ -209,6 +190,7 @@ tr:hover {
     animation: aparecer 0.3s ease;
     max-height: 90vh;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 #activo {
