@@ -22,7 +22,7 @@ document.getElementById("formLogin").addEventListener("submit", async (e) => {
 
         localStorage.setItem("usuario", JSON.stringify(usuario));
 
-        // 🔀 REDIRECCIÓN POR ROL
+        // Dirección por rol
         if (usuario.rol === "ADMIN") {
             window.location.href = "../index.html";
         } else {
