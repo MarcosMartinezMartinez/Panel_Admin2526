@@ -73,8 +73,11 @@ async function cargarFichajes() {
 
             if (mapa[fecha].entrada && mapa[fecha].salida) {
                 const diffMs = mapa[fecha].salida - mapa[fecha].entrada;
-                const diffMin = Math.floor(diffMs / 60000);
+                let diffMin = Math.floor(diffMs / 60000);
 
+                if (usuario.tipoPuesto === "OFICINA" && diffMin > 480) {
+                    diffMin -= 90; // quitar 1h 30m
+                }
                 const h = Math.floor(diffMin / 60);
                 const m = diffMin % 60;
 
@@ -195,11 +198,11 @@ async function controlarBotonesFichaje() {
         if (!entrada) {
             btnEntrada.disabled = false;
             btnSalida.disabled = true;
-        } 
+        }
         else if (entrada && !salida) {
             btnEntrada.disabled = true;
             btnSalida.disabled = false;
-        } 
+        }
         else {
             btnEntrada.disabled = true;
             btnSalida.disabled = true;
