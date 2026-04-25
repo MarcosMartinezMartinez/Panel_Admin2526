@@ -203,31 +203,21 @@ async function fichar(tipo) {
     );
 
 
-    // ---------------- ENTRADA ----------------
     if (tipo === "ENTRADA") {
-
-        // Si entra después de la hora del turno → incidencia
         if (ahora.getTime() > inicioTurno.getTime()) {
             document.getElementById("modalIncidencia").style.display = "block";
             window.fichajePendiente = { tipo };
             return;
         }
-
-        // Si entra antes o justo a la hora → permitir
         await enviarFichaje(tipo);
     }
 
 
-    // ---------------- SALIDA ----------------
     if (tipo === "SALIDA") {
-
-        // Si sale antes → permitir igualmente
         if (ahora.getTime() < finTurno.getTime()) {
             await enviarFichaje(tipo);
             return;
         }
-
-        // Si sale después → también permitir
         await enviarFichaje(tipo);
     }
 }
