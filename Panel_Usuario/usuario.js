@@ -158,13 +158,23 @@ async function controlarBotonesFichaje() {
         const btnEntrada = document.getElementById("btnEntrada");
         const btnSalida = document.getElementById("btnSalida");
 
+        // NUEVO: si no hay turno hoy → ambos deshabilitados
+        if (!turnoHoy) {
+            btnEntrada.disabled = true;
+            btnSalida.disabled = true;
+            return;
+        }
+
+        // lógica normal
         if (!entrada) {
             btnEntrada.disabled = false;
             btnSalida.disabled = true;
-        } else if (entrada && !salida) {
+        } 
+        else if (entrada && !salida) {
             btnEntrada.disabled = true;
             btnSalida.disabled = false;
-        } else {
+        } 
+        else {
             btnEntrada.disabled = true;
             btnSalida.disabled = true;
         }
@@ -176,21 +186,50 @@ async function controlarBotonesFichaje() {
 
 async function fichar(tipo) {
 
+    // Si no hay turno hoy → no puede fichar
     if (!turnoHoy) {
-        alert("No hay turno hoy");
+        alert("No tienes turno asignado hoy");
         return;
     }
 
     const ahora = new Date();
-    const inicioTurno = new Date(turnoHoy.fechaInicio.replace(" ", "T"));
 
-    if (tipo === "ENTRADA" && ahora.getTime() > inicioTurno.getTime()) {
-        document.getElementById("modalIncidencia").style.display = "block";
-        window.fichajePendiente = { tipo };
-        return;
+    const inicioTurno = new Date(
+        turnoHoy.fechaInicio.replace(" ", "T")
+    );
+
+    const finTurno = new Date(
+        turnoHoy.fechaFin.replace(" ", "T")
+    );
+
+
+    // ---------------- ENTRADA ----------------
+    if (tipo === "ENTRADA") {
+
+        // Si entra después de la hora del turno → incidencia
+        if (ahora.getTime() > inicioTurno.getTime()) {
+            document.getElementById("modalIncidencia").style.display = "block";
+            window.fichajePendiente = { tipo };
+            return;
+        }
+
+        // Si entra antes o justo a la hora → permitir
+        await enviarFichaje(tipo);
     }
 
-    await enviarFichaje(tipo);
+
+    // ---------------- SALIDA ----------------
+    if (tipo === "SALIDA") {
+
+        // Si sale antes → permitir igualmente
+        if (ahora.getTime() < finTurno.getTime()) {
+            await enviarFichaje(tipo);
+            return;
+        }
+
+        // Si sale después → también permitir
+        await enviarFichaje(tipo);
+    }
 }
 
 async function enviarFichaje(tipo, descripcion = null) {

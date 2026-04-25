@@ -4,7 +4,7 @@ const auth = localStorage.getItem("auth");
 
 // Control de acceso: solo usuarios con rol ADMIN pueden continuar
 if (!usuarioSesion || usuarioSesion.rol !== "ADMIN" || !auth) {
-    window.location.href = "login.html";
+    window.location.href = "/Login/login.html";
 }
 
 // URLs base de la API
