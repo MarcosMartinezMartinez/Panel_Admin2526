@@ -220,3 +220,9 @@ async function eliminarUsuario(id) {
         alert("No se pudo eliminar el usuario.");
     }
 }
+
+// Salir
+function logout() {
+    localStorage.removeItem("usuario");
+    window.location.href = "../Login/login.html";
+}
