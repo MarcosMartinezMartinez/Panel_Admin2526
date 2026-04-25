@@ -14,96 +14,111 @@
 
 <body>
 
-<div class="contenedor">
+    <div class="contenedor">
 
-    <h1>Gestión de Usuarios</h1>
+        <h1>Gestión de Usuarios</h1>
 
-    <a href="#" class="btn" id="btnNuevo">
-        <span class="material-symbols-outlined">person_add</span>
-        Nuevo Usuario
-    </a>
+        <div class="barra-acciones">
 
-    <table id="tablaUsuarios">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Apellidos</th>
-            <th>Email</th>
-            <th>Rol</th>
-            <th>Activo</th>
-            <th>Acciones</th>
-        </tr>
-        </thead>
+            <a href="#" class="btn" id="btnNuevo">
+                <span class="material-symbols-outlined">person_add</span>
+                Nuevo Usuario
+            </a>
 
-        <tbody></tbody>
-    </table>
+            <div class="buscador-wrapper">
+                <input type="text" id="buscadorUsuarios" placeholder="Buscar por nombre, apellidos o email..."
+                    class="buscador" />
 
-</div>
+                <button type="button" id="btnLimpiarBusqueda" class="btn-limpiar">
+                    ✖
+                </button>
 
-
-<!-- MODAL USUARIO -->
-<div id="modalUsuario" class="modal">
-    <div class="modal-content">
-
-        <span class="close"></span>
-        <h2 id="tituloModal">Nuevo Usuario</h2>
-
-        <form id="formNuevoUsuario">
-
-            <div class="campo">
-                <label>Nombre</label>
-                <input type="text" id="nombre" required>
             </div>
 
-            <div class="campo">
-                <label>Apellidos</label>
-                <input type="text" id="apellidos" required>
-            </div>
+        </div>
 
-            <div class="campo full">
-                <label>Email</label>
-                <input type="email" id="email" required>
-            </div>
+        <table id="tablaUsuarios">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
 
-            <div class="campo">
-                <label>Contraseña</label>
+            <tbody></tbody>
+        </table>
 
-                <div class="password-container">
-                    <input type="password" id="contraseña">
-                    <button type="button" id="togglePassword">👁️</button>
-                </div>
-            </div>
-
-            <div class="campo">
-                <label>Rol</label>
-                <select id="rol">
-                    <option value="ADMIN">ADMIN</option>
-                    <option value="EMPLEADO">EMPLEADO</option>
-                </select>
-            </div>
-
-            <div class="campo full">
-                <label>Tipo de puesto</label>
-                <select id="tipoPuesto">
-                    <option value="OFICINA">OFICINA</option>
-                    <option value="PRODUCCIÓN">PRODUCCIÓN</option>
-                </select>
-            </div>
-
-            <div class="campo full">
-                <label>Activo</label>
-                <input type="checkbox" id="activo">
-            </div>
-
-            <div class="botones">
-                <button type="submit">Guardar</button>
-                <button type="button" class="cancelar">Cancelar</button>
-            </div>
-
-        </form>
     </div>
-</div>
+
+
+    <!-- MODAL USUARIO -->
+    <div id="modalUsuario" class="modal">
+        <div class="modal-content">
+
+            <span class="close"></span>
+            <h2 id="tituloModal">Nuevo Usuario</h2>
+
+            <form id="formNuevoUsuario">
+
+                <div class="campo">
+                    <label>Nombre</label>
+                    <input type="text" id="nombre" required>
+                </div>
+
+                <div class="campo">
+                    <label>Apellidos</label>
+                    <input type="text" id="apellidos" required>
+                </div>
+
+                <div class="campo full">
+                    <label>Email</label>
+                    <input type="email" id="email" required>
+                </div>
+
+                <div class="campo">
+                    <label>Contraseña</label>
+
+                    <div class="password-container">
+                        <input type="password" id="contraseña">
+                        <button type="button" id="togglePassword">👁️</button>
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label>Rol</label>
+                    <select id="rol">
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="EMPLEADO">EMPLEADO</option>
+                    </select>
+                </div>
+
+                <div class="campo full">
+                    <label>Tipo de puesto</label>
+                    <select id="tipoPuesto">
+                        <option value="OFICINA">OFICINA</option>
+                        <option value="PRODUCCIÓN">PRODUCCIÓN</option>
+                    </select>
+                </div>
+
+                <div class="campo full">
+                    <label>Activo</label>
+                    <input type="checkbox" id="activo">
+                </div>
+
+                <div class="botones">
+                    <button type="submit">Guardar</button>
+                    <button type="button" class="cancelar">Cancelar</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
 
 </body>
+
 </html>

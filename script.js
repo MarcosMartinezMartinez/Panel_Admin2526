@@ -6,15 +6,26 @@ if (!usuarioSesion || usuarioSesion.rol !== "ADMIN" || !auth) {
 }
 
 const BASE_URL = "http://localhost:8080/usuario";
-
 let usuarioEditando = null;
+let listaUsuarios = [];
 
 window.addEventListener("DOMContentLoaded", () => {
     obtenerUsuarios();
     configurarFormulario();
     configurarModal();
-});
 
+    document.getElementById("buscadorUsuarios").addEventListener("input", function () {
+
+        const texto = this.value.toLowerCase().trim();
+        const filtrados = listaUsuarios.filter(u =>
+            u.nombre.toLowerCase().includes(texto) ||
+            u.apellidos.toLowerCase().includes(texto) ||
+            u.email.toLowerCase().includes(texto)
+        );
+
+        renderUsuarios(filtrados);
+    });
+});
 
 // LISTAR USUARIOS
 async function obtenerUsuarios() {
@@ -25,51 +36,58 @@ async function obtenerUsuarios() {
             }
         });
 
-        const usuarios = await res.json();
+        listaUsuarios = await res.json();
 
-        const tbody = document.querySelector("#tablaUsuarios tbody");
-        tbody.innerHTML = "";
-
-        usuarios.forEach(u => {
-
-            const tr = document.createElement("tr");
-
-            // CAMBIO IMPORTANTE: CLICK VA A NUEVA PÁGINA
-            tr.style.cursor = "pointer";
-            tr.onclick = () => {
-                localStorage.setItem("usuarioSeleccionado", JSON.stringify(u));
-                window.location.href = "usuarios_info.html";
-            };
-
-            tr.innerHTML = `
-                <td>${u.idEmpleado}</td>
-                <td>${u.nombre}</td>
-                <td>${u.apellidos}</td>
-                <td>${u.email}</td>
-                <td>${u.rol}</td>
-                <td>${u.activo ? "Sí" : "No"}</td>
-                <td>
-                    <a href="#" class="btn editar"
-                       onclick="event.stopPropagation(); abrirEditar(${u.idEmpleado})">
-                        Editar
-                    </a>
-
-                    <a href="#" class="btn eliminar"
-                       onclick="event.stopPropagation(); eliminarUsuario(${u.idEmpleado})">
-                        Eliminar
-                    </a>
-                </td>
-            `;
-
-            tbody.appendChild(tr);
-        });
+        renderUsuarios(listaUsuarios);
 
     } catch (err) {
         console.error(err);
         alert("No se pudieron cargar los usuarios.");
     }
 }
+function renderUsuarios(usuarios) {
 
+    const tbody = document.querySelector("#tablaUsuarios tbody");
+    tbody.innerHTML = "";
+
+    usuarios.forEach(u => {
+
+        const tr = document.createElement("tr");
+
+        tr.style.cursor = "pointer";
+        tr.onclick = () => {
+            localStorage.setItem("usuarioSeleccionado", JSON.stringify(u));
+            window.location.href = "usuarios_info.html";
+        };
+
+        tr.innerHTML = `
+            <td>${u.idEmpleado}</td>
+            <td>${u.nombre}</td>
+            <td>${u.apellidos}</td>
+            <td>${u.email}</td>
+            <td>${u.rol}</td>
+            <td>${u.activo ? "Sí" : "No"}</td>
+            <td>
+                <a href="#" class="btn editar"
+                   onclick="event.stopPropagation(); abrirEditar(${u.idEmpleado})">
+                    Editar
+                </a>
+
+                <a href="#" class="btn eliminar"
+                   onclick="event.stopPropagation(); eliminarUsuario(${u.idEmpleado})">
+                    Eliminar
+                </a>
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+}
+document.getElementById("btnLimpiarBusqueda").addEventListener("click", function () {
+    const input = document.getElementById("buscadorUsuarios");
+    input.value = "";
+    renderUsuarios(listaUsuarios);
+});
 
 // MODAL
 function configurarModal() {
@@ -93,7 +111,6 @@ function cerrarModal() {
     document.getElementById("formNuevoUsuario").reset();
     usuarioEditando = null;
 }
-
 
 // CREAR / EDITAR
 function configurarFormulario() {
@@ -154,7 +171,6 @@ function configurarFormulario() {
     };
 }
 
-
 // EDITAR
 async function abrirEditar(id) {
     try {
@@ -182,7 +198,6 @@ async function abrirEditar(id) {
         alert("Error al cargar usuario");
     }
 }
-
 
 // ELIMINAR
 async function eliminarUsuario(id) {

@@ -19,6 +19,7 @@ h2 {
     width: 90%;
     margin: auto;
 }
+
 .fila-superior {
     display: flex;
     justify-content: space-between;
@@ -62,8 +63,8 @@ h2 {
         flex-direction: column;
     }
 
-.perfil-box,
-.fichaje-box {
+    .perfil-box,
+    .fichaje-box {
         width: 100%;
     }
 }
@@ -90,6 +91,7 @@ h2 {
 .perfil-box tr:hover {
     background: rgba(59, 130, 246, 0.04);
 }
+
 .perfil-box {
     display: flex;
     align-items: center;
@@ -389,7 +391,7 @@ tr:hover {
     font-weight: 500;
 
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 
     transition: all 0.2s ease;
 }
@@ -397,4 +399,34 @@ tr:hover {
 .btn-volver:hover {
     background-color: #1a252f;
     transform: translateY(-2px);
+}
+
+.barra-acciones {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.buscador-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.buscador {
+    width: 300px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.btn-limpiar {
+    background: red;
+    color: white;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
 }

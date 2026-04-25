@@ -10,61 +10,62 @@
 
 <body>
 
-<div class="contenedor detalle-container">
+    <div class="contenedor detalle-container">
 
-    <a href="#" class="btn-volver" onclick="history.back()">← Atras</a>
+        <a href="#" class="btn-volver" onclick="history.back()">← Atras</a>
 
-    <h1>Información del Usuario</h1>
+        <h1>Información del Usuario</h1>
 
-    <div id="infoUsuario">
-        <h2 id="nombreUsuario"></h2>
-        <p id="emailUsuario"></p>
-        <p id="rolUsuario"></p>
-        <p id="puestoUsuario"></p>
+        <div id="infoUsuario">
+            <h2 id="nombreUsuario"></h2>
+            <p id="emailUsuario"></p>
+            <p id="rolUsuario"></p>
+            <p id="puestoUsuario"></p>
+        </div>
+
+        <hr>
+
+        <!-- TURNOS -->
+        <h3>Turnos</h3>
+
+        <div class="acciones-turnos">
+            <button onclick="editarTurnosSeleccionados()" class="btn">
+                Editar seleccionados
+            </button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Seleccionar</th>
+                    <th>Turno</th>
+                    <th>Inicio</th>
+                    <th>Fin</th>
+                </tr>
+            </thead>
+
+            <tbody id="tablaTurnosBody"></tbody>
+        </table>
+
+        <hr>
+
+        <!-- FICHAJES -->
+        <h3>Fichajes</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Entrada</th>
+                    <th>Salida</th>
+                </tr>
+            </thead>
+
+            <tbody id="tablaFichajesBody"></tbody>
+        </table>
+
     </div>
-
-    <hr>
-
-    <!-- TURNOS -->
-    <h3>Turnos</h3>
-
-    <div class="acciones-turnos">
-        <button onclick="editarTurnosSeleccionados()" class="btn">
-            Editar seleccionados
-        </button>
-    </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Seleccionar</th>
-                <th>Turno</th>
-                <th>Inicio</th>
-                <th>Fin</th>
-            </tr>
-        </thead>
-
-        <tbody id="tablaTurnosBody"></tbody>
-    </table>
-
-    <hr>
-
-    <!-- FICHAJES -->
-    <h3>Fichajes</h3>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Entrada</th>
-                <th>Salida</th>
-            </tr>
-        </thead>
-
-        <tbody id="tablaFichajesBody"></tbody>
-    </table>
-
-</div>
 
 </body>
+
 </html>
