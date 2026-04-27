@@ -222,51 +222,98 @@ async function cargarFichajes() {
         );
 
         if (!res.ok) throw new Error("Error al cargar fichajes");
+
         const fichajes = await res.json();
         const tbody = document.getElementById("tablaFichajesBody");
         tbody.innerHTML = "";
         const mapa = {};
+        const hoy = new Date().toLocaleDateString();
+
+        let entradaHoy = "--:--";
+        let salidaHoy = "--:--";
+
+        let totalMinutos = 0;
 
         fichajes.forEach(f => {
             let fechaObj = new Date(f.fechaHora || f.fecha_hora);
 
             if (isNaN(fechaObj)) return;
+
             const fecha = fechaObj.toLocaleDateString();
             const hora = fechaObj.toLocaleTimeString();
 
             if (!mapa[fecha]) {
                 mapa[fecha] = {
-                    entrada: "-",
-                    salida: "-"
+                    entrada: null,
+                    salida: null
                 };
             }
 
             if (f.tipo === "ENTRADA") {
-                mapa[fecha].entrada = hora;
+                mapa[fecha].entrada = fechaObj;
+
+                if (fecha === hoy) {
+                    entradaHoy = hora;
+                }
             }
 
             if (f.tipo === "SALIDA") {
-                mapa[fecha].salida = hora;
+                mapa[fecha].salida = fechaObj;
+
+                if (fecha === hoy) {
+                    salidaHoy = hora;
+                }
             }
         });
 
         Object.keys(mapa).forEach(fecha => {
+            let horasDia = "--";
+            let entradaTexto = "-";
+            let salidaTexto = "-";
+
+            if (mapa[fecha].entrada) {
+                entradaTexto = mapa[fecha].entrada.toLocaleTimeString();
+            }
+
+            if (mapa[fecha].salida) {
+                salidaTexto = mapa[fecha].salida.toLocaleTimeString();
+            }
+
+            if (mapa[fecha].entrada && mapa[fecha].salida) {
+                const diffMs = mapa[fecha].salida - mapa[fecha].entrada;
+                let diffMin = Math.floor(diffMs / 60000);
+
+                if (usuario.tipoPuesto === "OFICINA" && diffMin > 480) {
+                    diffMin -= 90;
+                }
+
+                const h = Math.floor(diffMin / 60);
+                const m = diffMin % 60;
+                horasDia = `${h}h ${m}m`;
+                totalMinutos += diffMin;
+            }
+
             tbody.innerHTML += `
                 <tr>
                     <td>${fecha}</td>
-                    <td>${mapa[fecha].entrada}</td>
-                    <td>${mapa[fecha].salida}</td>
+                    <td>${entradaTexto}</td>
+                    <td>${salidaTexto}</td>
+                    <td>${horasDia}</td>
                 </tr>
             `;
         });
+
+        const totalHoras = Math.floor(totalMinutos / 60);
+        const totalMin = totalMinutos % 60;
+
+        document.getElementById("totalHoras").textContent =
+            `${totalHoras}h ${totalMin}m`;
 
     } catch (err) {
         console.error(err);
         alert("Error al cargar fichajes");
     }
 }
-
-
 
 cargarInfoUsuario();
 cargarTurnos();
