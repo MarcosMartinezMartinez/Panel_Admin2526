@@ -4,6 +4,10 @@ const auth = localStorage.getItem("auth");
 const BASE_FICHAJES = "http://localhost:8080/fichaje";
 const BASE_TURNOS = "http://localhost:8080/turno";
 
+function soloFechaISO(date) {
+    return new Date(date).toISOString().split("T")[0];
+}
+
 let turnosGlobal = [];
 
 function esHoraValida(hora) {
@@ -42,7 +46,6 @@ async function cargarTurnos() {
 
         if (!res.ok) throw new Error("Error al cargar turnos");
         turnosGlobal = await res.json();
-
         const tbody = document.getElementById("tablaTurnosBody");
         tbody.innerHTML = "";
 
@@ -77,8 +80,6 @@ async function cargarTurnos() {
     }
 }
 
-
-
 // EDITAR TURNOS SELECCIONADOS
 function editarTurnosSeleccionados() {
     const checks = document.querySelectorAll(".turno-check:checked");
@@ -88,10 +89,8 @@ function editarTurnosSeleccionados() {
         return;
     }
 
-
     // OFICINA
     if (usuario.tipoPuesto === "OFICINA") {
-
         let nuevaHoraInicio = "";
         let nuevaHoraFin = "";
 
@@ -121,10 +120,8 @@ function editarTurnosSeleccionados() {
         });
     }
 
-
     // PRODUCCIÓN
     else if (usuario.tipoPuesto === "PRODUCCIÓN") {
-
         let nuevoTipo = "";
 
         while (true) {
@@ -143,7 +140,6 @@ function editarTurnosSeleccionados() {
 
         let nuevaHoraInicio = "";
         let nuevaHoraFin = "";
-
         while (true) {
             nuevaHoraInicio = prompt("Nueva hora inicio (HH:mm)");
             if (!nuevaHoraInicio) return;
@@ -207,8 +203,6 @@ async function actualizarTurnos() {
     }
 }
 
-
-
 // CARGAR FICHAJES
 async function cargarFichajes() {
     try {
@@ -238,8 +232,7 @@ async function cargarFichajes() {
             let fechaObj = new Date(f.fechaHora || f.fecha_hora);
 
             if (isNaN(fechaObj)) return;
-
-            const fecha = fechaObj.toLocaleDateString();
+            const fecha = soloFechaISO(fechaObj);
             const hora = fechaObj.toLocaleTimeString();
 
             if (!mapa[fecha]) {
@@ -248,7 +241,6 @@ async function cargarFichajes() {
                     salida: null
                 };
             }
-
             if (f.tipo === "ENTRADA") {
                 mapa[fecha].entrada = fechaObj;
 
@@ -256,7 +248,6 @@ async function cargarFichajes() {
                     entradaHoy = hora;
                 }
             }
-
             if (f.tipo === "SALIDA") {
                 mapa[fecha].salida = fechaObj;
 
@@ -270,19 +261,21 @@ async function cargarFichajes() {
             let horasDia = "--";
             let entradaTexto = "-";
             let salidaTexto = "-";
+            let claseColor = "rojo";
 
             if (mapa[fecha].entrada) {
                 entradaTexto = mapa[fecha].entrada.toLocaleTimeString();
             }
-
             if (mapa[fecha].salida) {
                 salidaTexto = mapa[fecha].salida.toLocaleTimeString();
             }
+            const turnoDia = turnosGlobal.find(t => {
+                return soloFechaISO(t.fechaInicio) === soloFechaISO(mapa[fecha].entrada);
+            });
 
             if (mapa[fecha].entrada && mapa[fecha].salida) {
                 const diffMs = mapa[fecha].salida - mapa[fecha].entrada;
                 let diffMin = Math.floor(diffMs / 60000);
-
                 if (usuario.tipoPuesto === "OFICINA" && diffMin > 480) {
                     diffMin -= 90;
                 }
@@ -291,10 +284,29 @@ async function cargarFichajes() {
                 const m = diffMin % 60;
                 horasDia = `${h}h ${m}m`;
                 totalMinutos += diffMin;
+
+                if (turnoDia) {
+
+                    const entradaMin = mapa[fecha].entrada.getHours() * 60 + mapa[fecha].entrada.getMinutes();
+                    const salidaMin = mapa[fecha].salida.getHours() * 60 + mapa[fecha].salida.getMinutes();
+                    const inicioTurno = new Date(turnoDia.fechaInicio);
+                    const finTurno = new Date(turnoDia.fechaFin);
+                    const inicioTurnoMin = inicioTurno.getHours() * 60 + inicioTurno.getMinutes();
+                    const finTurnoMin = finTurno.getHours() * 60 + finTurno.getMinutes();
+                    const margenEntrada = inicioTurnoMin + 5;
+                    const entroBien = entradaMin <= margenEntrada;
+                    const salioBien = salidaMin >= finTurnoMin;
+
+                    if (entroBien && salioBien) {
+                        claseColor = "verde";
+                    } else {
+                        claseColor = "amarillo";
+                    }
+                }
             }
 
             tbody.innerHTML += `
-                <tr>
+                <tr class="${claseColor}">
                     <td>${fecha}</td>
                     <td>${entradaTexto}</td>
                     <td>${salidaTexto}</td>
@@ -305,7 +317,6 @@ async function cargarFichajes() {
 
         const totalHoras = Math.floor(totalMinutos / 60);
         const totalMin = totalMinutos % 60;
-
         document.getElementById("totalHoras").textContent =
             `${totalHoras}h ${totalMin}m`;
 

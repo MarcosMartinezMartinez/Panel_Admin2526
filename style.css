@@ -430,3 +430,15 @@ tr:hover {
     border-radius: 6px;
     cursor: pointer;
 }
+
+.verde {
+    background-color: #b8f5b8;
+}
+
+.amarillo {
+    background-color: #fff0a8;
+}
+
+.rojo {
+    background-color: #ffb3b3;
+}
