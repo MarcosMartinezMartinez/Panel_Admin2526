@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 if (!usuario) {
-    window.location.href = "login.html";
+    window.location.href = "/Login/login.html";
 }
 
 document.getElementById("uId").textContent = usuario.idEmpleado;
@@ -29,21 +29,28 @@ async function cargarFichajes() {
 
         const mapa = {};
 
-        const hoy = new Date().toLocaleDateString();
+        const hoy = new Date().toISOString().split("T")[0];
+
         let entradaHoy = "--:--";
         let salidaHoy = "--:--";
 
+        let totalMinutos = 0;
+
         fichajes.forEach(f => {
             const fechaObj = new Date(f.fechaHora);
-            const fecha = fechaObj.toLocaleDateString();
+
+            const fecha = fechaObj.toISOString().split("T")[0];
             const hora = fechaObj.toLocaleTimeString();
 
             if (!mapa[fecha]) {
-                mapa[fecha] = { entrada: "-", salida: "-" };
+                mapa[fecha] = {
+                    entrada: null,
+                    salida: null
+                };
             }
 
             if (f.tipo === "ENTRADA") {
-                mapa[fecha].entrada = hora;
+                mapa[fecha].entrada = fechaObj;
 
                 if (fecha === hoy) {
                     entradaHoy = hora;
@@ -51,7 +58,7 @@ async function cargarFichajes() {
             }
 
             if (f.tipo === "SALIDA") {
-                mapa[fecha].salida = hora;
+                mapa[fecha].salida = fechaObj;
 
                 if (fecha === hoy) {
                     salidaHoy = hora;
@@ -62,14 +69,35 @@ async function cargarFichajes() {
         Object.keys(mapa).forEach(fecha => {
             const tr = document.createElement("tr");
 
+            let horasDia = "--";
+
+            if (mapa[fecha].entrada && mapa[fecha].salida) {
+                const diffMs = mapa[fecha].salida - mapa[fecha].entrada;
+                const diffMin = Math.floor(diffMs / 60000);
+
+                const h = Math.floor(diffMin / 60);
+                const m = diffMin % 60;
+
+                horasDia = `${h}h ${m}m`;
+
+                totalMinutos += diffMin;
+            }
+
             tr.innerHTML = `
                 <td>${fecha}</td>
-                <td>${mapa[fecha].entrada}</td>
-                <td>${mapa[fecha].salida}</td>
+                <td>${mapa[fecha].entrada ? mapa[fecha].entrada.toLocaleTimeString() : "-"}</td>
+                <td>${mapa[fecha].salida ? mapa[fecha].salida.toLocaleTimeString() : "-"}</td>
+                <td>${horasDia}</td>
             `;
 
             tbody.appendChild(tr);
         });
+
+        const totalHoras = Math.floor(totalMinutos / 60);
+        const totalMin = totalMinutos % 60;
+
+        document.getElementById("totalHoras").textContent =
+            `${totalHoras}h ${totalMin}m`;
 
         document.getElementById("horaEntradaHoy").textContent = entradaHoy;
         document.getElementById("horaSalidaHoy").textContent = salidaHoy;
@@ -158,14 +186,12 @@ async function controlarBotonesFichaje() {
         const btnEntrada = document.getElementById("btnEntrada");
         const btnSalida = document.getElementById("btnSalida");
 
-        // NUEVO: si no hay turno hoy → ambos deshabilitados
         if (!turnoHoy) {
             btnEntrada.disabled = true;
             btnSalida.disabled = true;
             return;
         }
 
-        // lógica normal
         if (!entrada) {
             btnEntrada.disabled = false;
             btnSalida.disabled = true;
@@ -186,14 +212,7 @@ async function controlarBotonesFichaje() {
 
 async function fichar(tipo) {
 
-    // Si no hay turno hoy → no puede fichar
-    if (!turnoHoy) {
-        alert("No tienes turno asignado hoy");
-        return;
-    }
-
     const ahora = new Date();
-
     const inicioTurno = new Date(
         turnoHoy.fechaInicio.replace(" ", "T")
     );
@@ -201,7 +220,6 @@ async function fichar(tipo) {
     const finTurno = new Date(
         turnoHoy.fechaFin.replace(" ", "T")
     );
-
 
     if (tipo === "ENTRADA") {
         if (ahora.getTime() > inicioTurno.getTime()) {
@@ -211,7 +229,6 @@ async function fichar(tipo) {
         }
         await enviarFichaje(tipo);
     }
-
 
     if (tipo === "SALIDA") {
         if (ahora.getTime() < finTurno.getTime()) {
