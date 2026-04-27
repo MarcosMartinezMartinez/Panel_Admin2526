@@ -21,23 +21,30 @@ document.getElementById("uRol").textContent = usuario.rol;
 //Cargar Fichajes
 async function cargarFichajes() {
     try {
+        const hoyRef = new Date();
+        const mesActual = hoyRef.getMonth();
+        const añoActual = hoyRef.getFullYear();
         const res = await fetch(`${BASE_FICHAJES}/empleado/${usuario.idEmpleado}`);
         const fichajes = await res.json();
-
         const tbody = document.getElementById("tablaFichajesUsuario");
         tbody.innerHTML = "";
-
         const mapa = {};
-
         const hoy = new Date().toISOString().split("T")[0];
-
         let entradaHoy = "--:--";
         let salidaHoy = "--:--";
-
         let totalMinutos = 0;
 
         fichajes.forEach(f => {
             const fechaObj = new Date(f.fechaHora);
+
+            if (isNaN(fechaObj)) return;
+
+            if (
+                fechaObj.getMonth() !== mesActual ||
+                fechaObj.getFullYear() !== añoActual
+            ) {
+                return;
+            }
 
             const fecha = fechaObj.toISOString().split("T")[0];
             const hora = fechaObj.toLocaleTimeString();
@@ -78,11 +85,10 @@ async function cargarFichajes() {
                 if (usuario.tipoPuesto === "OFICINA" && diffMin > 480) {
                     diffMin -= 90; // quitar 1h 30m
                 }
+
                 const h = Math.floor(diffMin / 60);
                 const m = diffMin % 60;
-
                 horasDia = `${h}h ${m}m`;
-
                 totalMinutos += diffMin;
             }
 

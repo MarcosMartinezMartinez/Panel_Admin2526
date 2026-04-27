@@ -205,6 +205,10 @@ async function actualizarTurnos() {
 
 // CARGAR FICHAJES
 async function cargarFichajes() {
+    const hoy = new Date();
+    const mesActual = hoy.getMonth();
+    const añoActual = hoy.getFullYear();
+
     try {
         const res = await fetch(
             `${BASE_FICHAJES}/empleado/${usuario.idEmpleado}`,
@@ -221,43 +225,37 @@ async function cargarFichajes() {
         const tbody = document.getElementById("tablaFichajesBody");
         tbody.innerHTML = "";
         const mapa = {};
-        const hoy = new Date().toLocaleDateString();
-
-        let entradaHoy = "--:--";
-        let salidaHoy = "--:--";
-
         let totalMinutos = 0;
 
         fichajes.forEach(f => {
             let fechaObj = new Date(f.fechaHora || f.fecha_hora);
 
             if (isNaN(fechaObj)) return;
+
+            if (
+                fechaObj.getMonth() !== mesActual ||
+                fechaObj.getFullYear() !== añoActual
+            ) {
+                return;
+            }
+
             const fecha = soloFechaISO(fechaObj);
-            const hora = fechaObj.toLocaleTimeString();
 
             if (!mapa[fecha]) {
-                mapa[fecha] = {
-                    entrada: null,
-                    salida: null
-                };
+                mapa[fecha] = { entrada: null, salida: null };
             }
+
             if (f.tipo === "ENTRADA") {
                 mapa[fecha].entrada = fechaObj;
-
-                if (fecha === hoy) {
-                    entradaHoy = hora;
-                }
             }
+
             if (f.tipo === "SALIDA") {
                 mapa[fecha].salida = fechaObj;
-
-                if (fecha === hoy) {
-                    salidaHoy = hora;
-                }
             }
         });
 
         Object.keys(mapa).forEach(fecha => {
+
             let horasDia = "--";
             let entradaTexto = "-";
             let salidaTexto = "-";
@@ -266,16 +264,15 @@ async function cargarFichajes() {
             if (mapa[fecha].entrada) {
                 entradaTexto = mapa[fecha].entrada.toLocaleTimeString();
             }
+
             if (mapa[fecha].salida) {
                 salidaTexto = mapa[fecha].salida.toLocaleTimeString();
             }
-            const turnoDia = turnosGlobal.find(t => {
-                return soloFechaISO(t.fechaInicio) === soloFechaISO(mapa[fecha].entrada);
-            });
 
             if (mapa[fecha].entrada && mapa[fecha].salida) {
                 const diffMs = mapa[fecha].salida - mapa[fecha].entrada;
                 let diffMin = Math.floor(diffMs / 60000);
+
                 if (usuario.tipoPuesto === "OFICINA" && diffMin > 480) {
                     diffMin -= 90;
                 }
@@ -284,25 +281,7 @@ async function cargarFichajes() {
                 const m = diffMin % 60;
                 horasDia = `${h}h ${m}m`;
                 totalMinutos += diffMin;
-
-                if (turnoDia) {
-
-                    const entradaMin = mapa[fecha].entrada.getHours() * 60 + mapa[fecha].entrada.getMinutes();
-                    const salidaMin = mapa[fecha].salida.getHours() * 60 + mapa[fecha].salida.getMinutes();
-                    const inicioTurno = new Date(turnoDia.fechaInicio);
-                    const finTurno = new Date(turnoDia.fechaFin);
-                    const inicioTurnoMin = inicioTurno.getHours() * 60 + inicioTurno.getMinutes();
-                    const finTurnoMin = finTurno.getHours() * 60 + finTurno.getMinutes();
-                    const margenEntrada = inicioTurnoMin + 5;
-                    const entroBien = entradaMin <= margenEntrada;
-                    const salioBien = salidaMin >= finTurnoMin;
-
-                    if (entroBien && salioBien) {
-                        claseColor = "verde";
-                    } else {
-                        claseColor = "amarillo";
-                    }
-                }
+                claseColor = "verde";
             }
 
             tbody.innerHTML += `
@@ -317,6 +296,7 @@ async function cargarFichajes() {
 
         const totalHoras = Math.floor(totalMinutos / 60);
         const totalMin = totalMinutos % 60;
+
         document.getElementById("totalHoras").textContent =
             `${totalHoras}h ${totalMin}m`;
 
