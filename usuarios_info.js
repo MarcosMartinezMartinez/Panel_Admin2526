@@ -30,43 +30,23 @@ function cargarInfoUsuario() {
         "Puesto: " + usuario.tipoPuesto;
 }
 
-
-
-// CARGAR TURNOS
+// TURNOS
 async function cargarTurnos() {
     try {
-        const res = await fetch(
-            `${BASE_TURNOS}/empleado/${usuario.idEmpleado}`,
-            {
-                headers: {
-                    "Authorization": "Basic " + auth
-                }
-            }
-        );
+        const res = await fetch(`${BASE_TURNOS}/empleado/${usuario.idEmpleado}`, {
+            headers: { "Authorization": "Basic " + auth }
+        });
 
-        if (!res.ok) throw new Error("Error al cargar turnos");
+        if (!res.ok) throw new Error();
+
         turnosGlobal = await res.json();
         const tbody = document.getElementById("tablaTurnosBody");
         tbody.innerHTML = "";
 
-        if (turnosGlobal.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="4">No hay turnos asignados</td>
-                </tr>
-            `;
-            return;
-        }
-
         turnosGlobal.forEach((t, index) => {
             tbody.innerHTML += `
                 <tr>
-                    <td>
-                        <input 
-                            type="checkbox" 
-                            class="turno-check" 
-                            value="${index}">
-                    </td>
+                    <td><input type="checkbox" class="turno-check" value="${index}"></td>
                     <td>${t.tipoTurno}</td>
                     <td>${t.fechaInicio}</td>
                     <td>${t.fechaFin}</td>
@@ -74,13 +54,12 @@ async function cargarTurnos() {
             `;
         });
 
-    } catch (err) {
-        console.error(err);
+    } catch {
         alert("Error al cargar turnos");
     }
 }
 
-// EDITAR TURNOS SELECCIONADOS
+// ABRIR MODAL
 function editarTurnosSeleccionados() {
     const checks = document.querySelectorAll(".turno-check:checked");
 
@@ -89,97 +68,61 @@ function editarTurnosSeleccionados() {
         return;
     }
 
-    // OFICINA
-    if (usuario.tipoPuesto === "OFICINA") {
-        let nuevaHoraInicio = "";
-        let nuevaHoraFin = "";
+    document.getElementById("modalTurnos").style.display = "block";
 
-        while (true) {
-            nuevaHoraInicio = prompt("Nueva hora inicio (HH:mm)");
-            if (!nuevaHoraInicio) return;
+    if (usuario.tipoPuesto === "PRODUCCIÓN") {
+        document.getElementById("grupoTipoTurno").style.display = "block";
+    } else {
+        document.getElementById("grupoTipoTurno").style.display = "none";
+    }
+}
 
-            if (esHoraValida(nuevaHoraInicio)) break;
-            alert("Hora inválida. Usa formato 00:00 - 23:59");
-        }
+// GUARDAR CAMBIOS
+function guardarCambiosTurnos() {
+    const checks = document.querySelectorAll(".turno-check:checked");
 
-        while (true) {
-            nuevaHoraFin = prompt("Nueva hora fin (HH:mm)");
-            if (!nuevaHoraFin) return;
+    const horaInicio = document.getElementById("horaInicioInput").value;
+    const horaFin = document.getElementById("horaFinInput").value;
+    const tipoTurno = document.getElementById("tipoTurnoSelect").value;
 
-            if (esHoraValida(nuevaHoraFin)) break;
-            alert("Hora inválida. Usa formato 00:00 - 23:59");
-        }
-
-        checks.forEach(check => {
-            const index = check.value;
-            const turno = turnosGlobal[index];
-            const fechaInicioOriginal = turno.fechaInicio.split(" ")[0];
-            const fechaFinOriginal = turno.fechaFin.split(" ")[0];
-            turno.fechaInicio = `${fechaInicioOriginal} ${nuevaHoraInicio}:00`;
-            turno.fechaFin = `${fechaFinOriginal} ${nuevaHoraFin}:00`;
-        });
+    if (!esHoraValida(horaInicio) || !esHoraValida(horaFin)) {
+        alert("Horas inválidas");
+        return;
     }
 
-    // PRODUCCIÓN
-    else if (usuario.tipoPuesto === "PRODUCCIÓN") {
-        let nuevoTipo = "";
+    checks.forEach(check => {
+        const turno = turnosGlobal[check.value];
 
-        while (true) {
-            nuevoTipo = prompt("Tipo turno (MAÑANA / TARDE / NOCHE)");
+        const fechaInicio = turno.fechaInicio.split(" ")[0];
+        const fechaFin = turno.fechaFin.split(" ")[0];
 
-            if (!nuevoTipo) return;
-            nuevoTipo = nuevoTipo.toUpperCase().trim();
+        turno.fechaInicio = `${fechaInicio} ${horaInicio}:00`;
+        turno.fechaFin = `${fechaFin} ${horaFin}:00`;
 
-            if (
-                nuevoTipo === "MAÑANA" || nuevoTipo === "TARDE" || nuevoTipo === "NOCHE"
-            ) {
-                break;
-            }
-            alert("Solo: MAÑANA, TARDE o NOCHE");
+        if (usuario.tipoPuesto === "PRODUCCIÓN") {
+            turno.tipoTurno = tipoTurno;
         }
+    });
 
-        let nuevaHoraInicio = "";
-        let nuevaHoraFin = "";
-        while (true) {
-            nuevaHoraInicio = prompt("Nueva hora inicio (HH:mm)");
-            if (!nuevaHoraInicio) return;
-
-            if (esHoraValida(nuevaHoraInicio)) break;
-            alert("Hora inválida");
-        }
-
-        while (true) {
-            nuevaHoraFin = prompt("Nueva hora fin (HH:mm)");
-            if (!nuevaHoraFin) return;
-
-            if (esHoraValida(nuevaHoraFin)) break;
-            alert("Hora inválida");
-        }
-
-        checks.forEach(check => {
-            const index = check.value;
-            const turno = turnosGlobal[index];
-            const fechaInicioOriginal = turno.fechaInicio.split(" ")[0];
-            const fechaFinOriginal = turno.fechaFin.split(" ")[0];
-            turno.tipoTurno = nuevoTipo;
-            turno.fechaInicio = `${fechaInicioOriginal} ${nuevaHoraInicio}:00`;
-            turno.fechaFin = `${fechaFinOriginal} ${nuevaHoraFin}:00`;
-        });
-    }
-
+    cerrarModal();
     actualizarTurnos();
 }
 
-
+// CERRAR MODAL
+function cerrarModal() {
+    document.getElementById("modalTurnos").style.display = "none";
+    document.getElementById("horaInicioInput").value = "";
+    document.getElementById("horaFinInput").value = "";
+}
 
 // ACTUALIZAR BACKEND
 async function actualizarTurnos() {
-    try {
-        const checks = document.querySelectorAll(".turno-check:checked");
+    const checks = document.querySelectorAll(".turno-check:checked");
 
+    try {
         for (const check of checks) {
-            const index = check.value;
-            const turno = turnosGlobal[index];
+            const turno = turnosGlobal[check.value];
+
             const res = await fetch(BASE_TURNOS, {
                 method: "PUT",
                 headers: {
@@ -189,119 +132,71 @@ async function actualizarTurnos() {
                 body: JSON.stringify(turno)
             });
 
-            if (!res.ok) {
-                throw new Error("Error al actualizar turno");
-            }
+            if (!res.ok) throw new Error();
         }
 
-        alert("Turnos actualizados correctamente");
+        alert("Turnos actualizados");
         cargarTurnos();
 
-    } catch (err) {
-        console.error(err);
+    } catch {
         alert("Error actualizando turnos");
     }
 }
 
-// CARGAR FICHAJES
+// FICHAJES
 async function cargarFichajes() {
-    const hoy = new Date();
-    const mesActual = hoy.getMonth();
-    const añoActual = hoy.getFullYear();
-
     try {
-        const res = await fetch(
-            `${BASE_FICHAJES}/empleado/${usuario.idEmpleado}`,
-            {
-                headers: {
-                    "Authorization": "Basic " + auth
-                }
-            }
-        );
-
-        if (!res.ok) throw new Error("Error al cargar fichajes");
+        const res = await fetch(`${BASE_FICHAJES}/empleado/${usuario.idEmpleado}`, {
+            headers: { "Authorization": "Basic " + auth }
+        });
 
         const fichajes = await res.json();
         const tbody = document.getElementById("tablaFichajesBody");
         tbody.innerHTML = "";
-        const mapa = {};
+
         let totalMinutos = 0;
+        const mapa = {};
 
         fichajes.forEach(f => {
-            let fechaObj = new Date(f.fechaHora || f.fecha_hora);
-
-            if (isNaN(fechaObj)) return;
-
-            if (
-                fechaObj.getMonth() !== mesActual ||
-                fechaObj.getFullYear() !== añoActual
-            ) {
-                return;
-            }
-
+            const fechaObj = new Date(f.fechaHora || f.fecha_hora);
             const fecha = soloFechaISO(fechaObj);
 
-            if (!mapa[fecha]) {
-                mapa[fecha] = { entrada: null, salida: null };
-            }
+            if (!mapa[fecha]) mapa[fecha] = { entrada: null, salida: null };
 
-            if (f.tipo === "ENTRADA") {
-                mapa[fecha].entrada = fechaObj;
-            }
-
-            if (f.tipo === "SALIDA") {
-                mapa[fecha].salida = fechaObj;
-            }
+            if (f.tipo === "ENTRADA") mapa[fecha].entrada = fechaObj;
+            if (f.tipo === "SALIDA") mapa[fecha].salida = fechaObj;
         });
 
         Object.keys(mapa).forEach(fecha => {
 
-            let horasDia = "--";
-            let entradaTexto = "-";
-            let salidaTexto = "-";
-            let claseColor = "rojo";
+            let entrada = mapa[fecha].entrada;
+            let salida = mapa[fecha].salida;
 
-            if (mapa[fecha].entrada) {
-                entradaTexto = mapa[fecha].entrada.toLocaleTimeString();
-            }
+            let horas = "--";
+            let clase = "rojo";
 
-            if (mapa[fecha].salida) {
-                salidaTexto = mapa[fecha].salida.toLocaleTimeString();
-            }
+            if (entrada && salida) {
+                let min = Math.floor((salida - entrada) / 60000);
+                totalMinutos += min;
 
-            if (mapa[fecha].entrada && mapa[fecha].salida) {
-                const diffMs = mapa[fecha].salida - mapa[fecha].entrada;
-                let diffMin = Math.floor(diffMs / 60000);
-
-                if (usuario.tipoPuesto === "OFICINA" && diffMin > 480) {
-                    diffMin -= 90;
-                }
-
-                const h = Math.floor(diffMin / 60);
-                const m = diffMin % 60;
-                horasDia = `${h}h ${m}m`;
-                totalMinutos += diffMin;
-                claseColor = "verde";
+                horas = `${Math.floor(min / 60)}h ${min % 60}m`;
+                clase = "verde";
             }
 
             tbody.innerHTML += `
-                <tr class="${claseColor}">
+                <tr class="${clase}">
                     <td>${fecha}</td>
-                    <td>${entradaTexto}</td>
-                    <td>${salidaTexto}</td>
-                    <td>${horasDia}</td>
+                    <td>${entrada ? entrada.toLocaleTimeString() : "-"}</td>
+                    <td>${salida ? salida.toLocaleTimeString() : "-"}</td>
+                    <td>${horas}</td>
                 </tr>
             `;
         });
 
-        const totalHoras = Math.floor(totalMinutos / 60);
-        const totalMin = totalMinutos % 60;
-
         document.getElementById("totalHoras").textContent =
-            `${totalHoras}h ${totalMin}m`;
+            `${Math.floor(totalMinutos / 60)}h ${totalMinutos % 60}m`;
 
-    } catch (err) {
-        console.error(err);
+    } catch {
         alert("Error al cargar fichajes");
     }
 }

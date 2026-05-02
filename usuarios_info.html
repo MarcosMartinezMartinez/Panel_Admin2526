@@ -63,8 +63,44 @@
             </thead>
             <tbody id="tablaFichajesBody"></tbody>
         </table>
+
         <h3>Total horas trabajadas: <span id="totalHoras">0</span></h3>
 
+    </div>
+
+    <div id="modalTurnos" class="modal">
+        <div class="modal-content">
+
+            <span class="close" onclick="cerrarModal()">&times;</span>
+
+            <h3>Editar turnos</h3>
+
+            <!-- SOLO PRODUCCIÓN -->
+            <div class="campo" id="grupoTipoTurno" style="display:none;">
+                <label>Tipo turno</label>
+                <select id="tipoTurnoSelect">
+                    <option value="MAÑANA">MAÑANA</option>
+                    <option value="TARDE">TARDE</option>
+                    <option value="NOCHE">NOCHE</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label>Hora inicio</label>
+                <input type="time" id="horaInicioInput">
+            </div>
+
+            <div class="campo">
+                <label>Hora fin</label>
+                <input type="time" id="horaFinInput">
+            </div>
+
+            <div class="botones">
+                <button onclick="guardarCambiosTurnos()">Guardar</button>
+                <button class="cancelar" onclick="cerrarModal()">Cancelar</button>
+            </div>
+
+        </div>
     </div>
 
 </body>

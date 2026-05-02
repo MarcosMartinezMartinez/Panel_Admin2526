@@ -131,6 +131,7 @@ td:last-child {
     justify-content: center;
     align-items: center;
     gap: 8px;
+    height: 70%;
 }
 
 /* tablas*/
@@ -261,6 +262,9 @@ tr:hover {
 .botones button[type="submit"] {
     background: #28a745;
     color: white;
+    &:active{
+        filter: brightness(80%);
+    }
 }
 
 .cancelar {
