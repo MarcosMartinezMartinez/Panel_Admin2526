@@ -1,6 +1,5 @@
 const usuario = JSON.parse(localStorage.getItem("usuarioSeleccionado"));
 const auth = localStorage.getItem("auth");
-
 const BASE_FICHAJES = "http://localhost:8080/fichaje";
 const BASE_TURNOS = "http://localhost:8080/turno";
 
@@ -15,15 +14,41 @@ function esHoraValida(hora) {
     return regex.test(hora);
 }
 
-//NUEVO: comprobar si es del mes actual
-function esDelMesActual(fecha) {
-    const hoy = new Date();
+// VARIABLES MES SELECCIONADO
+let mesSeleccionado = new Date().getMonth();
+let anioSeleccionado = new Date().getFullYear();
+
+// FUNCION FILTRADO MES
+function esDelMesSeleccionado(fecha) {
     const f = new Date(fecha);
 
     return (
-        f.getMonth() === hoy.getMonth() &&
-        f.getFullYear() === hoy.getFullYear()
+        f.getMonth() === mesSeleccionado &&
+        f.getFullYear() === anioSeleccionado
     );
+}
+
+// CAMBIAR MES
+function cambiarMes() {
+    const valor = document.getElementById("selectorMes").value;
+
+    if (!valor) return;
+
+    const partes = valor.split("-");
+    anioSeleccionado = parseInt(partes[0]);
+    mesSeleccionado = parseInt(partes[1]) - 1;
+
+    cargarTurnos();
+    cargarFichajes();
+}
+
+// INICIALIZAR INPUT MES
+function inicializarMesActual() {
+    const input = document.getElementById("selectorMes");
+    const hoy = new Date();
+    const mes = String(hoy.getMonth() + 1).padStart(2, "0");
+    const anio = hoy.getFullYear();
+    input.value = `${anio}-${mes}`;
 }
 
 // INFO USUARIO
@@ -52,15 +77,14 @@ async function cargarTurnos() {
 
         turnosGlobal = await res.json();
 
-        //FILTRAR SOLO MES ACTUAL
+        // FILTRAR POR MES
         turnosGlobal = turnosGlobal.filter(t => {
             const fechaInicio = t.fechaInicio.split(" ")[0];
-            return esDelMesActual(fechaInicio);
+            return esDelMesSeleccionado(fechaInicio);
         });
 
         const tbody = document.getElementById("tablaTurnosBody");
         tbody.innerHTML = "";
-
         turnosGlobal.forEach((t, index) => {
             tbody.innerHTML += `
                 <tr>
@@ -173,9 +197,8 @@ async function cargarFichajes() {
         fichajes.forEach(f => {
             const fechaObj = new Date(f.fechaHora || f.fecha_hora);
 
-            //FILTRAR MES ACTUAL
-            if (!esDelMesActual(fechaObj)) return;
-
+            // FILTRAR POR MES
+            if (!esDelMesSeleccionado(fechaObj)) return;
             const fecha = soloFechaISO(fechaObj);
 
             if (!mapa[fecha]) mapa[fecha] = { entrada: null, salida: null };
@@ -184,6 +207,7 @@ async function cargarFichajes() {
         });
 
         Object.keys(mapa).forEach(fecha => {
+
             let entrada = mapa[fecha].entrada;
             let salida = mapa[fecha].salida;
             let horas = "--";
@@ -192,7 +216,6 @@ async function cargarFichajes() {
             if (entrada && salida) {
                 let min = Math.floor((salida - entrada) / 60000);
                 totalMinutos += min;
-
                 horas = `${Math.floor(min / 60)}h ${min % 60}m`;
                 clase = "verde";
             }
@@ -215,6 +238,7 @@ async function cargarFichajes() {
     }
 }
 
+inicializarMesActual();
 cargarInfoUsuario();
 cargarTurnos();
 cargarFichajes();
