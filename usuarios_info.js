@@ -15,6 +15,17 @@ function esHoraValida(hora) {
     return regex.test(hora);
 }
 
+//NUEVO: comprobar si es del mes actual
+function esDelMesActual(fecha) {
+    const hoy = new Date();
+    const f = new Date(fecha);
+
+    return (
+        f.getMonth() === hoy.getMonth() &&
+        f.getFullYear() === hoy.getFullYear()
+    );
+}
+
 // INFO USUARIO
 function cargarInfoUsuario() {
     document.getElementById("nombreUsuario").textContent =
@@ -40,6 +51,13 @@ async function cargarTurnos() {
         if (!res.ok) throw new Error();
 
         turnosGlobal = await res.json();
+
+        //FILTRAR SOLO MES ACTUAL
+        turnosGlobal = turnosGlobal.filter(t => {
+            const fechaInicio = t.fechaInicio.split(" ")[0];
+            return esDelMesActual(fechaInicio);
+        });
+
         const tbody = document.getElementById("tablaTurnosBody");
         tbody.innerHTML = "";
 
@@ -80,7 +98,6 @@ function editarTurnosSeleccionados() {
 // GUARDAR CAMBIOS
 function guardarCambiosTurnos() {
     const checks = document.querySelectorAll(".turno-check:checked");
-
     const horaInicio = document.getElementById("horaInicioInput").value;
     const horaFin = document.getElementById("horaFinInput").value;
     const tipoTurno = document.getElementById("tipoTurnoSelect").value;
@@ -92,10 +109,8 @@ function guardarCambiosTurnos() {
 
     checks.forEach(check => {
         const turno = turnosGlobal[check.value];
-
         const fechaInicio = turno.fechaInicio.split(" ")[0];
         const fechaFin = turno.fechaFin.split(" ")[0];
-
         turno.fechaInicio = `${fechaInicio} ${horaInicio}:00`;
         turno.fechaFin = `${fechaFin} ${horaFin}:00`;
 
@@ -122,7 +137,6 @@ async function actualizarTurnos() {
     try {
         for (const check of checks) {
             const turno = turnosGlobal[check.value];
-
             const res = await fetch(BASE_TURNOS, {
                 method: "PUT",
                 headers: {
@@ -153,25 +167,25 @@ async function cargarFichajes() {
         const fichajes = await res.json();
         const tbody = document.getElementById("tablaFichajesBody");
         tbody.innerHTML = "";
-
         let totalMinutos = 0;
         const mapa = {};
 
         fichajes.forEach(f => {
             const fechaObj = new Date(f.fechaHora || f.fecha_hora);
+
+            //FILTRAR MES ACTUAL
+            if (!esDelMesActual(fechaObj)) return;
+
             const fecha = soloFechaISO(fechaObj);
 
             if (!mapa[fecha]) mapa[fecha] = { entrada: null, salida: null };
-
             if (f.tipo === "ENTRADA") mapa[fecha].entrada = fechaObj;
             if (f.tipo === "SALIDA") mapa[fecha].salida = fechaObj;
         });
 
         Object.keys(mapa).forEach(fecha => {
-
             let entrada = mapa[fecha].entrada;
             let salida = mapa[fecha].salida;
-
             let horas = "--";
             let clase = "rojo";
 
